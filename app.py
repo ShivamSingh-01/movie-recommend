@@ -5,26 +5,24 @@ import requests
 import gdown  # to download similarity.pkl from Google Drive
 
 # -----------------------------
-# TMDB API KEY (from Streamlit Secrets)
+# TMDB API KEY (direct use, no secrets)
 # -----------------------------
-TMDB_API_KEY = st.secrets["TMDB_API_KEY"]
+TMDB_API_KEY = "8265bd1679663a7ea12ac168da84d2e8"
 
 # -----------------------------
-# Download similarity.pkl from Google Drive (your uploaded file)
+# Download similarity.pkl from Google Drive
 # -----------------------------
-file_id = "1t2tIMQ36_p4fRrCelW06nVNkge8WNRj4"   # <-- your Google Drive file ID
+file_id = "1t2tIMQ36_p4fRrCelW06nVNkge8WNRj4"   # your Google Drive file ID
 url = f"https://drive.google.com/uc?id={file_id}"
 output_path = "similarity.pkl"
 
-# Download only if not already present
 try:
     open(output_path, "rb")
 except FileNotFoundError:
     gdown.download(url, output_path, quiet=False)
 
-
 # -----------------------------
-# Fetch movie poster using TMDB SEARCH API
+# Fetch movie poster (TMDB API)
 # -----------------------------
 def fetch_poster(movie_name):
     try:
@@ -42,12 +40,10 @@ def fetch_poster(movie_name):
                 return "https://image.tmdb.org/t/p/w500" + poster_path
     except:
         pass
-
     return "https://via.placeholder.com/500x750?text=No+Poster"
 
-
 # -----------------------------
-# Recommendation Function
+# Recommendation logic
 # -----------------------------
 def rec(movie):
     movie_index = movies[movies['title'] == movie].index[0]
@@ -69,14 +65,12 @@ def rec(movie):
 
     return recommended_movies, recommended_posters
 
-
 # -----------------------------
-# Load Data
+# Load data
 # -----------------------------
 movies_dict = pickle.load(open("movie_dict.pkl", "rb"))
 movies = pd.DataFrame(movies_dict)
 similarity = pickle.load(open("similarity.pkl", "rb"))
-
 
 # -----------------------------
 # Streamlit UI
